@@ -17,4 +17,4 @@ const data = {
 console.log(parseData(data, ["ommitedField", "x"]));
 
 const data2 = { x: 1, y: 2, s: "string", obj: { z: 1, d: 5 } };
-console.log(expressionParser("HERE: ${s}: ${x+y+obj.z}", data2));
+console.log(expressionParser("HERE: ${s1}: ${x+y+obj.z}", data2));

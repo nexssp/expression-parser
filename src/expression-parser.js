@@ -22,12 +22,15 @@ const expressionParser = (exp, data) => {
       if (er.message.includes("is not defined")) {
         const undefinedVar = er.message.split(" ")[0];
 
+        console.log("undefinedVar:", undefinedVar);
+
         Object.keys(data).forEach((k) => {
           if (undefinedVar.similarity(k) > 50) {
             maybe.push(k);
           }
         });
       }
+
       errors.add("=".repeat(80));
       errors.add(
         bold(`\tError in parsing expression: ${exp},`) +
