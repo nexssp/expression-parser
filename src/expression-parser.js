@@ -25,6 +25,8 @@ const expressionParser = (exp, data) => {
         console.log("undefinedVar:", undefinedVar);
 
         Object.keys(data).forEach((k) => {
+          console.log(`undefinedVar.similarity(k)`, undefinedVar.similarity(k));
+
           if (undefinedVar.similarity(k) > 50) {
             maybe.push(k);
           }
