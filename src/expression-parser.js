@@ -10,7 +10,7 @@ const expressionParser = (exp, data) => {
   //   );
   // }
   if (Array.isArray(exp)) {
-    return exp.map((subexpr) => expressionParser(data, subexpr));
+    return exp.map((subexpr) => expressionParser(subexpr, data));
   }
 
   let errors = new Set();
