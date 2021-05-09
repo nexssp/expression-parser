@@ -12,6 +12,12 @@ npm i @nexssp/expression-parser
 
 ## Usage
 
+### When there is error in parsing
+
+It shows the error with suggestion when there is type for example:
+
+![image](https://user-images.githubusercontent.com/53263666/117570866-6d63b500-b0cc-11eb-9708-40563a022d1d.png)
+
 ## Expression Parser
 
 ```js

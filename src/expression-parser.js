@@ -1,5 +1,5 @@
 require("@nexssp/extend")("string");
-const { bold, red, yellow } = require("@nexssp/ansi");
+const { bold, red, yellow, green } = require("@nexssp/ansi");
 
 const expressionParser = (exp, data) => {
   // if (!exp) exp = data;
@@ -21,13 +21,8 @@ const expressionParser = (exp, data) => {
       let maybe = [];
       if (er.message.includes("is not defined")) {
         const undefinedVar = er.message.split(" ")[0];
-
-        console.log("undefinedVar:", undefinedVar);
-
         Object.keys(data).forEach((k) => {
-          console.log(`undefinedVar.similarity(k)`, undefinedVar.similarity(k));
-
-          if (undefinedVar.similarity(k) > 50) {
+          if (undefinedVar.similarity(k) >= 50) {
             maybe.push(k);
           }
         });
@@ -39,7 +34,11 @@ const expressionParser = (exp, data) => {
           red(bold(`\n\tError message: ${yellow(bold(er.message))}`)) +
           ` ${
             maybe && maybe.length > 0
-              ? blue(`\nDid you meant: ${maybe.join(" or ")}?`)
+              ? bold(
+                  green(
+                    `\nDid you meant: ${bold(yellow(maybe.join(" or ")))}'?`
+                  )
+                )
               : ""
           }`
       );
@@ -50,7 +49,7 @@ const expressionParser = (exp, data) => {
 
   if (errors.size > 0) {
     errors.forEach((se) => {
-      console.log(red(se));
+      console.log(se);
     });
     process.exit(0);
   }
