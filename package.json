@@ -1,14 +1,19 @@
 {
   "name": "@nexssp/expression-parser",
-  "description": "Evaluate JavaScript/Node JS in variables, based in input data.",
+  "description": "Evaluate JavaScript/Node.js in variables, based in input data.",
   "version": "1.0.4",
   "homepage": "https://nexss.com",
-  "main": "dist/expression-parser.js",
-  "files": [
-    "src/**/*"
-  ],
+  "main": "src/expression-parser.js",
+  "types": "src/types.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/expression-parser.js",
+      "require": "./src/expression-parser.js",
+      "types": "./src/types.d.ts"
+    }
+  },
   "scripts": {
-    "test": "nexssp-test --ignore=languages",
+    "test": "tsc --noEmit && node tests/test.js",
     "prepare": "npm run nexss:build",
     "nexss:build": "npx @nexssp/min@1.0.6",
     "nexss:clean": ""
@@ -24,10 +29,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/nexssp/test.git"
+    "url": "git+ssh://git@github.com/nexssp/expression-parser.git"
   },
   "bugs": {
-    "url": "https://github.com/nexssp/test/issues",
+    "url": "https://github.com/nexssp/expression-parser/issues",
     "email": "mapoart@gmail.com"
   },
   "license": "MIT",
@@ -44,5 +49,9 @@
   "dependencies": {
     "@nexssp/ansi": "^1.1.5",
     "@nexssp/extend": "^2.0.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.3"
   }
 }

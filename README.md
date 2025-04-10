@@ -1,67 +1,66 @@
 # @nexssp/expression-parser
 
-Easy Object expression-parser. See below for details.
+Lightweight JavaScript expression parser with error diagnostics and object interpolation.
 
-**NOTE:** This module is **experimental!** It works, but may have some issues. Submit new issue if you have found any issue..
+## Features
+- Safe evaluation of embedded JavaScript expressions
+- Intelligent variable name suggestions for undefined variables
+- Recursive object parsing
+- Clear error reporting with ANSI formatting
 
 ## Installation
 
-```sh
-npm i @nexssp/expression-parser
+```bash
+npm install @nexssp/expression-parser
 ```
+
 
 ## Usage
 
-### When there is error in parsing
+### Basic Expression Parsing
+```javascript
+const { expressionParser } = require("@nexssp/expression-parser");
 
-It shows the error with suggestion when there is type for example:
-
-![image](https://user-images.githubusercontent.com/53263666/117570866-6d63b500-b0cc-11eb-9708-40563a022d1d.png)
-
-## Expression Parser
-
-```js
-const ep = require("@nexssp/expression-parser");
-
-const data = { x: 1, y: 2, s: "some string", obj: { z: 1, d: 5 } };
-console.log(ep.expressionParser("HERE: ${s}: ${x+y+obj.z}", data));
-
-// Result: HERE: some string: 4
+const data = { a: 5, b: 10 };
+console.log(expressionParser("Sum: ${a + b}", data));
+// Output: "Sum: 15"
 ```
 
-### parseData
+### Object Data Parsing
+```javascript
+const { parseData } = require("@nexssp/expression-parser");
 
-```js
-const ep = require("@nexssp/expression-parser");
-
-const data = {
-  my1stVar: "myfirst variable",
-  number: 5,
-  another: 10,
-  functionx: (y) => {
-    x = 3;
-    return x + y;
+const template = {
+  greeting: "Hello ${name}!",
+  calculation: "${x * y}",
+  nested: {
+    value: "${Math.PI.toFixed(2)}"
   },
-  something: "Here is evaluated the object itself: ${my1stVar}",
-  calculate: "Some calculations working: ${number+another} ${functionx(1000)}",
-  ommitedField: "Will not be evaluated: ${number+another}",
-  x: "${a+b+C}", // Will not show error if a, b or C does not exist. as it is not evaluated.
+  omitted: "Will not parse: ${undefined}"
 };
 
-console.log(ep.parseData(data, ["ommitedField", "x"]));
-```
-
-Result below. You can **even use functions** defined in the object etc. see **${functionx(1000)}**
-
-```js
+const result = parseData(template, ["omitted"]);
+console.log(result);
+/* Output:
 {
-  my1stVar: 'myfirst variable',
-  number: 5,
-  another: 10,
-  functionx: [Function: functionx],
-  something: 'Here is evaluated the object itself: myfirst variable',
-  calculate: 'Some calculations working: 15 1003',
-  ommitedField: 'Will not be evaluated: ${number+another}',
-  x: '${a+b+C}'
+  greeting: "Hello John!",
+  calculation: 50,
+  nested: { value: "3.14" },
+  omitted: "Will not parse: ${undefined}"
 }
+*/
 ```
+
+### Error Handling
+![Error Example](https://user-images.githubusercontent.com/53263666/117570866-6d63b500-b0cc-11eb-9708-40563a022d1d.png)
+
+## API
+
+### `expressionParser(exp, data)`
+Evaluates expressions in strings while handling errors gracefully.
+
+### `parseData(object, omittedKeys)`
+Recursively processes object values, skipping specified keys.
+
+## Security
+**Important:** Uses JavaScript evaluation - only use with trusted input sources.

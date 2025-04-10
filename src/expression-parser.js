@@ -1,56 +1,42 @@
-const { interpolate } = require("@nexssp/extend");
+const { interpolate, similarity } = require("@nexssp/extend");
 const { bold, red, yellow, green } = require("@nexssp/ansi");
 
+/**
+ * @template T
+ * @param {T} exp
+ * @param {object} data
+ * @returns {T}
+ */
 const expressionParser = (exp, data) => {
-  // if (!exp) exp = data;
-  // if (Object.prototype.toString.call(exp) === `[object Object]`) {
-  //   return Object.assign(
-  //     {},
-  //     Object.keys(exp).map(ex => expressionParser(data, ex))
-  //   );
-  // }
-  if (Array.isArray(exp)) {
-    return exp.map((subexpr) => expressionParser(subexpr, data));
-  }
+  const errors = new Set();
 
-  let errors = new Set();
-  if (exp && isNaN(exp) && exp.includes && exp.includes("${")) {
+  if (typeof exp === "string" && exp.includes("${")) {
     try {
-      return exp.interpolate(data);
+      return interpolate(exp, data);
     } catch (er) {
-      let maybe = [];
+      let suggestions = [];
       if (er.message.includes("is not defined")) {
         const undefinedVar = er.message.split(" ")[0];
         Object.keys(data).forEach((k) => {
-          if (undefinedVar.similarity(k) >= 50) {
-            maybe.push(k);
+          if (similarity(undefinedVar, k) >= 50) {
+            suggestions.push(k);
           }
         });
       }
 
       errors.add("=".repeat(80));
       errors.add(
-        bold(`\tError in parsing expression: ${exp},`) +
-        red(bold(`\n\tError message: ${yellow(bold(er.message))}`)) +
-        ` ${maybe && maybe.length > 0
-          ? bold(
-            green(
-              `\nDid you meant: ${bold(yellow(maybe.join(" or ")))}'?`
-            )
-          )
-          : ""
-        }`
+        bold(`\tError parsing expression: ${exp}`) +
+        red(bold(`\n\tError: ${yellow(bold(er.message))}`)) +
+        (suggestions.length > 0
+          ? bold(green(`\nDid you mean: ${bold(yellow(suggestions.join(" or ")))}?`))
+          : "")
       );
-
-      errors.add(data);
     }
   }
 
   if (errors.size > 0) {
-    errors.forEach((se) => {
-      console.log(se);
-    });
-    process.exit(0);
+    throw new Error(Array.from(errors).join("\n"));
   }
 
   return exp;
@@ -58,22 +44,40 @@ const expressionParser = (exp, data) => {
 
 module.exports.expressionParser = expressionParser;
 
-module.exports.parseData = (data, ommited = []) => {
-  if (
-    Array.isArray(ommited) ||
-    ommited.length === 0 ||
-    ommited === null ||
-    ommited === false
-  ) {
-    Object.keys(data).forEach((e) => {
-      if (ommited && !ommited.includes(e)) {
-        data[e] = expressionParser(data[e], data);
-      }
-    });
-  } else {
-    console.error(red(`ommited must be array.`));
-    process.exit(1);
+/**
+ * @template {object} T
+ * @param {T} data
+ * @param {(keyof T)[]} [omitted=[]]
+ * @returns {T}
+ */
+module.exports.parseData = (data, omitted = []) => {
+  if (!Array.isArray(omitted)) {
+    throw new TypeError("'omitted' must be an array");
   }
 
-  return data;
+  const processValue = (value, context) => {
+    if (typeof value === "string") {
+      return expressionParser(value, context);
+    } else if (Array.isArray(value)) {
+      return value.map((item) => processValue(item, context));
+    } else if (value !== null && typeof value === "object") {
+      const newObj = {};
+      for (const key in value) {
+        newObj[key] = processValue(value[key], context);
+      }
+      return newObj;
+    }
+    return value;
+  };
+
+  const result = {};
+  for (const key of Object.keys(data)) {
+    if (omitted.includes(key)) {
+      result[key] = data[key];
+    } else {
+      result[key] = processValue(data[key], data);
+    }
+  }
+
+  return result;
 };
