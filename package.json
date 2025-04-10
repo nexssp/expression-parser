@@ -3,7 +3,7 @@
   "description": "Evaluate JavaScript/Node JS in variables, based in input data.",
   "version": "1.0.3",
   "homepage": "https://nexss.com",
-  "main": "src/expression-parser.js",
+  "main": "dist/expression-parser.js",
   "files": [
     "src/**/*"
   ],
@@ -42,7 +42,7 @@
     }
   ],
   "dependencies": {
-    "@nexssp/ansi": "^1.1.1",
-    "@nexssp/extend": "^1.0.7"
+    "@nexssp/ansi": "^1.1.5",
+    "@nexssp/extend": "^2.0.9"
   }
 }

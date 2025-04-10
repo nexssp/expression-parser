@@ -1,4 +1,4 @@
-require("@nexssp/extend")("string");
+const { interpolate } = require("@nexssp/extend");
 const { bold, red, yellow, green } = require("@nexssp/ansi");
 
 const expressionParser = (exp, data) => {
@@ -31,16 +31,15 @@ const expressionParser = (exp, data) => {
       errors.add("=".repeat(80));
       errors.add(
         bold(`\tError in parsing expression: ${exp},`) +
-          red(bold(`\n\tError message: ${yellow(bold(er.message))}`)) +
-          ` ${
-            maybe && maybe.length > 0
-              ? bold(
-                  green(
-                    `\nDid you meant: ${bold(yellow(maybe.join(" or ")))}'?`
-                  )
-                )
-              : ""
-          }`
+        red(bold(`\n\tError message: ${yellow(bold(er.message))}`)) +
+        ` ${maybe && maybe.length > 0
+          ? bold(
+            green(
+              `\nDid you meant: ${bold(yellow(maybe.join(" or ")))}'?`
+            )
+          )
+          : ""
+        }`
       );
 
       errors.add(data);
